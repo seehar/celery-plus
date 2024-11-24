@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "celery-plus"
+version = "0.0.1"
+description = "Celery 增强工具"
+authors = ["seehar"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "23.12.1"
+isort = "5.13.2"
+pre-commit = ">=3.5.0"
+celery = "^5.4.0"
