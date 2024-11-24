@@ -1,4 +1,6 @@
+import asyncio
 import datetime
+import logging
 import time
 import uuid
 from abc import ABCMeta
@@ -67,3 +69,14 @@ class IScheduler(metaclass=ABCMeta):
         if not name:
             name = sig.task + uuid.uuid4().hex
         self._sender.add_periodic_task(schedule, sig, args, kwargs, name, **opts)
+
+    @property
+    def asyncio_loop(self):
+        try:
+            loop = asyncio.get_event_loop()
+        except Exception as e:
+            logging.exception(e)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop = asyncio.get_event_loop()
+        return loop
