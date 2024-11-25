@@ -23,13 +23,11 @@ if TYPE_CHECKING:
 
 
 class IScheduler(metaclass=ABCMeta):
-    def __init__(self, sender: Optional["Celery"] = None):
-        self._sender = sender
-
     @abstractmethod
-    def register(self) -> None:
+    def register(self, sender: "Celery") -> None:
         """
         Register the scheduler to the celery app
+        :param sender: celery application
         :return:
         """
 
@@ -53,8 +51,9 @@ class IScheduler(metaclass=ABCMeta):
             task_func.apply_async(args=args)  # noqa
             time.sleep(second)
 
+    @staticmethod
     def add_periodic_task(
-        self,
+        sender: "Celery",
         schedule: Union[int, "crontab"],
         sig: "Signature",
         args: Tuple[Any] = (),
@@ -63,8 +62,8 @@ class IScheduler(metaclass=ABCMeta):
         **opts
     ) -> None:
         if not name:
-            name = sig.task + uuid.uuid4().hex
-        self._sender.add_periodic_task(schedule, sig, args, kwargs, name, **opts)
+            name = str(sig.task) + uuid.uuid4().hex
+        sender.add_periodic_task(schedule, sig, args, kwargs, name, **opts)
 
     @property
     def asyncio_loop(self) -> "AbstractEventLoop":

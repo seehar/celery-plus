@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "celery-plus"
-version = "0.0.5"
+version = "0.0.6"
 description = "Celery 增强工具"
 authors = ["seehar"]
 license = "MIT"

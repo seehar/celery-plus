@@ -11,10 +11,10 @@ if TYPE_CHECKING:
     from celery import Celery
 
 
-def setup_periodic_task(sender: "Celery", scheduler_module: ModuleType):
+def celery_plus_setup(sender: "Celery", scheduler_module: ModuleType):
     classes = getmembers(scheduler_module, isclass)
     for class_name, class_ in classes:
-        class_(sender).register()
+        class_().register(sender)
 
 
-__all__ = ("IScheduler", "setup_periodic_task", "wait_time")
+__all__ = ("IScheduler", "celery_plus_setup", "wait_time")
