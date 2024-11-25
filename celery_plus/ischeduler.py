@@ -8,25 +8,22 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 from typing import Any
 from typing import Callable
+from typing import List
 from typing import Optional
-
-from celery.canvas import Signature
-from celery.schedules import crontab
+from typing import Tuple
+from typing import Union
 
 
 if TYPE_CHECKING:
+    from asyncio import AbstractEventLoop
+
     from celery import Celery
+    from celery.canvas import Signature
+    from celery.schedules import crontab
 
 
 class IScheduler(metaclass=ABCMeta):
-    _sender: Optional["Celery"] = None
-
-    def scheduler_register(self, sender: "Celery"):
-        """
-        Register the scheduler to the celery app
-        :param sender: celery application
-        :return:
-        """
+    def __init__(self, sender: Optional["Celery"] = None):
         self._sender = sender
 
     @abstractmethod
@@ -35,11 +32,10 @@ class IScheduler(metaclass=ABCMeta):
         Register the scheduler to the celery app
         :return:
         """
-        ...
 
     @staticmethod
     def execute_task_every_second(
-        task_func: Callable, second: int, args: Optional[list[Any]] = None
+        task_func: Callable, second: int, args: Optional[List[Any]] = None
     ) -> None:
         """
         分钟内秒级任务调度
@@ -59,10 +55,10 @@ class IScheduler(metaclass=ABCMeta):
 
     def add_periodic_task(
         self,
-        schedule: int | crontab,
-        sig: Signature,
-        args: tuple = (),
-        kwargs: tuple = (),
+        schedule: Union[int, "crontab"],
+        sig: "Signature",
+        args: Tuple[Any] = (),
+        kwargs: Tuple[Any] = (),
         name: Optional[str] = None,
         **opts
     ) -> None:
@@ -71,7 +67,7 @@ class IScheduler(metaclass=ABCMeta):
         self._sender.add_periodic_task(schedule, sig, args, kwargs, name, **opts)
 
     @property
-    def asyncio_loop(self):
+    def asyncio_loop(self) -> "AbstractEventLoop":
         try:
             loop = asyncio.get_event_loop()
         except Exception as e:
